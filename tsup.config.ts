@@ -1,7 +1,7 @@
 import {defineConfig} from 'tsup';
 
 export default defineConfig({
-  entry: ['./src/index.ts', './src/types/index.ts', './src/user.ts'],
+  entry: ['./src/index.ts', './src/types/index.ts', './src/user.ts', './src/utils/tokenFiles.ts'],
   outDir: './dist',
   bundle: true,
   minifyWhitespace: true,
