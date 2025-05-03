@@ -75,4 +75,42 @@ export class BeraniCerdasAPI {
 			token: response.token,
 		};
 	}
+
+	/**
+	 * Sent forgot password URL
+	 * @param email User's email want to sent forgot password
+	 * @return {Promise<boolean>}
+	 */
+	public async sentForgotPassword(email: string): Promise<boolean> {
+		const response = await this.http
+			.post(AuthRouteEnums.ForgotPassword, {
+				json: { email },
+				throwHttpErrors: false,
+			})
+			.json<{
+				success: boolean;
+				message: string;
+			}>();
+
+		return response.success && Boolean(response.message);
+	}
+
+	/**
+	 * Verify the verification code
+	 * @param email An email want to verified
+	 * @param pin The verification code was sent to the email
+	 * @return {Promise<boolean>} identify the account is already verified or not
+	 */
+	public async verifyPin(email: string, pin: string): Promise<boolean> {
+		const response = await this.http.post(AuthRouteEnums.ForgotPassword, {
+			json: { email, code: pin.toString() },
+			throwHttpErrors: false,
+		});
+
+		if (response.statusCode === 401) {
+			return false;
+		}
+
+		return true;
+	}
 }

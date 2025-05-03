@@ -2,6 +2,8 @@ export enum AuthRouteEnums {
 	Login = './api/login',
 	Register = './api/register',
 	Logout = './api/logout',
+	ForgotPassword = './api/forgot-password',
+	VerifyPin = './api/forgot-password/verify/pin',
 }
 
 export enum ProfileRouteEnums {
