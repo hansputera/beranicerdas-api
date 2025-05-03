@@ -1,5 +1,5 @@
 import got, { type Got } from 'got';
-import type { Auth, ClearResponses } from './types/index.js';
+import type { Auth, ClearResponses, ReadTokenFunc } from './types/index.js';
 import { AuthRouteEnums } from './enums/routes.js';
 import { User } from './user.js';
 
@@ -13,7 +13,7 @@ export class BeraniCerdasAPI {
 	 * @constructor
 	 * @param baseUrl BeraniCerdas's backend URL
 	 */
-	constructor(protected baseUrl = 'https://service.beranicerdas.sekolahkukeren.id') {
+	constructor(protected readonly baseUrl = 'https://service.beranicerdas.sekolahkukeren.id') {
 		this.http = got.extend({
 			prefixUrl: baseUrl,
 			headers: {
@@ -28,9 +28,17 @@ export class BeraniCerdasAPI {
 	/**
 	 * Login to user
 	 * @param payload Login JSON Payload
+	 * @param readTokenFn A function that reads saved token
 	 * @return {Promise<User>}
 	 */
-	public async login(payload: Auth.LoginPayload): Promise<User> {
+	public async login(payload: Auth.LoginPayload, readTokenFn?: ReadTokenFunc): Promise<User> {
+		if (typeof readTokenFn === 'function') {
+			const prev = await readTokenFn(payload.username);
+			if (prev) {
+				return new User(prev.token, this.http, prev.data.user);
+			}
+		}
+
 		const response = await this.http
 			.post(AuthRouteEnums.Login, {
 				json: payload,

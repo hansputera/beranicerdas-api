@@ -1,5 +1,5 @@
 import type { Got } from 'got';
-import type { Auth, ClearResponses, Product, Profile } from './types/index.js';
+import type { Auth, ClearResponses, Product, Profile, SaveTokenFunc } from './types/index.js';
 import { AuthRouteEnums, ProfileRouteEnums } from './enums/routes.js';
 import { onlyKeys } from './utils/onlyKeys.js';
 
@@ -14,9 +14,9 @@ export class User {
 	 * @param parentHttp BeraniCerdas HTTP Client
 	 */
 	constructor(
-		token: string,
-		parentHttp: Got,
-		public user: Auth.LoginResponse['data']['user'],
+		protected readonly token: string,
+		readonly parentHttp: Got,
+		public readonly user: Readonly<Auth.LoginResponse['data']['user']>,
 	) {
 		this.http = parentHttp.extend({
 			headers: {
@@ -100,5 +100,15 @@ export class User {
 
 	public async logout(): Promise<void> {
 		await this.http.post(AuthRouteEnums.Logout);
+	}
+
+	public async save(fn: SaveTokenFunc) {
+		return fn(this.user.username, {
+			token: this.token,
+			data: {
+				user: this.user,
+			},
+			message: '',
+		});
 	}
 }

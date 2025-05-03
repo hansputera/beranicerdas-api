@@ -223,3 +223,6 @@ export namespace ClearResponses {
 		token: string;
 	};
 }
+
+export type SaveTokenFunc = (id: string, json: Auth.LoginResponse) => Promise<void> | void;
+export type ReadTokenFunc = (id: string) => Promise<Auth.LoginResponse | undefined>;
